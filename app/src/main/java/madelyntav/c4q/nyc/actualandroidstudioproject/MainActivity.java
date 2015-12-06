@@ -1,7 +1,9 @@
 package madelyntav.c4q.nyc.actualandroidstudioproject;
 
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,59 +21,58 @@ import retrofit.Response;
 import retrofit.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
-    static String base ="https://itunes.apple.com";
-    static String type="";
+    static String base = "https://itunes.apple.com";
+    String type = "";
     Button submit;
-    static EditText request;
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
+    EditText request;
+    ListView mDrawerList;
+    ArrayAdapter<String> mAdapter;
     ListView listView;
     String requestFromUser;
     CustomAdapter customAdapter;
     Retrofit retrofit;
     ItunesService service;
     Call<ResultResponse> results;
+    DrawerLayout drawerLayout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        submit= (Button) findViewById(R.id.button);
-        request= (EditText) findViewById(R.id.searchBar);
-        mDrawerList=(ListView) findViewById(R.id.navList);
-        listView= (ListView) findViewById(R.id.listView);
+        submit = (Button) findViewById(R.id.button);
+        request = (EditText) findViewById(R.id.searchBar);
+        mDrawerList = (ListView) findViewById(R.id.navList);
+        drawerLayout=(DrawerLayout) findViewById(R.id.drawer_layout);
+        listView = (ListView) findViewById(R.id.listView);
         retrofit = new Retrofit.Builder().baseUrl(base).addConverterFactory(GsonConverterFactory.create()).build();
-         service = retrofit.create(ItunesService.class);
-
-
+        service = retrofit.create(ItunesService.class);
         addDrawerItems();
 
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestFromUser = request.getText().toString().trim();
-                getApiResults(requestFromUser);
 
-            }
-        });
+//        submit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                requestFromUser = request.getText().toString().trim();
+//                getApiResults(requestFromUser);
+//            }
+//        });
 
     }
 
-    private void getApiResults(String requested) {
+    public void getApiResults(View view) {
+        requestFromUser = request.getText().toString().trim();
+        //requested=requested + type;
+        Log.d(requestFromUser, type);
 
-    if (!type.equals("")){
-            requested+=type;
-        }
-
-        results = service.getResults(requested);
+        results = service.getResults(requestFromUser,type);
         results.enqueue(new Callback<ResultResponse>() {
             @Override
             public void onResponse(Response<ResultResponse> response, Retrofit retrofit) {
 
                 ResultResponse resultResponse = response.body();
-                List<Result> resultList= resultResponse.results;
-                customAdapter= new CustomAdapter(getApplicationContext(),resultList);
+                List<Result> resultList = resultResponse.results;
+                customAdapter = new CustomAdapter(getApplicationContext(), resultList);
                 listView.setAdapter(customAdapter);
                 type="";
             }
@@ -81,45 +82,59 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
             }
         });
+
+
     }
 
     private void addDrawerItems() {
+
         String[] osArray = {"Music", "Software", "Movies", "Podcasts", "Videos", "TV Shows"};
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, osArray);
+        mAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, osArray);
+
         mDrawerList.setAdapter(mAdapter);
+
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0: {
-                            type="&entity=music";
+                        type = "music";
+                        drawerLayout.closeDrawers();
+
                         break;
                     }
                     case 1: {
-                        type="&entity=software";
+                        type = "software";
+                        drawerLayout.closeDrawers();
+
                         break;
                     }
                     case 2: {
-                        type="&entity=movie";
+                        type = "movie";
+                        drawerLayout.closeDrawers();
 
                         break;
                     }
                     case 3: {
-                        type="&entity=podcast";
+                        type = "podcast";
+                        drawerLayout.closeDrawers();
 
                         break;
                     }
                     case 4: {
-                        type="&entity=musicvideo";
+                        type = "musicvideo";
+                        drawerLayout.closeDrawers();
 
                         break;
                     }
                     case 5: {
-                        type="&entity=tvShow";
+                        type = "tvShow";
+                        drawerLayout.closeDrawers();
 
                         break;
                     }
                     default:
+
                         break;
                 }
             }

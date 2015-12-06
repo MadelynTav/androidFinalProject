@@ -9,5 +9,5 @@ import retrofit.http.Query;
  */
 public interface ItunesService {
     @GET("/search")
-    Call<ResultResponse> getResults(@Query("term") String query);
+    Call<ResultResponse> getResults(@Query("term") String query, @Query("entity") String movie);
 }
