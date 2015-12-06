@@ -49,20 +49,10 @@ public class MainActivity extends AppCompatActivity {
         service = retrofit.create(ItunesService.class);
         addDrawerItems();
 
-
-//        submit.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                requestFromUser = request.getText().toString().trim();
-//                getApiResults(requestFromUser);
-//            }
-//        });
-
     }
 
     public void getApiResults(View view) {
         requestFromUser = request.getText().toString().trim();
-        //requested=requested + type;
         Log.d(requestFromUser, type);
 
         results = service.getResults(requestFromUser,type);
@@ -98,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0: {
-                        type = "music";
+                        type = "";
                         drawerLayout.closeDrawers();
 
                         break;
